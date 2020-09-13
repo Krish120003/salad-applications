@@ -184,24 +184,28 @@ export class Plugin {
 
     console.log(`Download complete ${this.name}`)
     console.log(`Extracting ${this.name}`)
+    if (downloadFilename.includes('.tar')) {
+      await fs.promises.mkdir(this.pluginDirectory, { recursive: true })
+      execSync(`tar -xf '${downloadFilename}' -C '${this.pluginDirectory}'`)
+    } else {
+      await new Promise((fulfill, reject) => {
+        let unzipper = new DecompressZip(downloadFilename)
 
-    await new Promise((fulfill, reject) => {
-      let unzipper = new DecompressZip(downloadFilename)
+        unzipper.on('error', (err: any) => {
+          console.log(`Unzipping failed for ${this.name}`, err)
+          reject(err)
+        })
 
-      unzipper.on('error', (err: any) => {
-        console.log(`Unzipping failed for ${this.name}`, err)
-        reject(err)
+        unzipper.on('extract', () => {
+          console.log('Finished extracting')
+          fulfill()
+        })
+
+        unzipper.extract({
+          path: this.pluginDirectory,
+        })
       })
-
-      unzipper.on('extract', () => {
-        console.log('Finished extracting')
-        fulfill()
-      })
-
-      unzipper.extract({
-        path: this.pluginDirectory,
-      })
-    })
+    }
 
     console.log(`Finished extracting ${this.name}`)
 
