@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/electron'
+import { execSync } from 'child_process'
 import { app, BrowserWindow, Input, ipcMain, Menu, nativeImage, powerMonitor, shell, Tray } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import isOnline from 'is-online'
@@ -61,6 +62,24 @@ let activeIconEnabled = false
 let tray: Tray
 let updateChecked = false
 
+function glxCheckVRAM() {
+  let output = execSync("glxinfo | grep -E 'VBO free memory - total:'")
+  try {
+    return parseInt(output.toString().match(/\d+/)[0])
+  } catch (err) {
+    throw err
+  }
+}
+
+function clinfoCheckVRAM() {
+  let output = execSync("clinfo | grep 'Global memory size'")
+  try {
+    return Math.round(parseInt(output.toString().match(/\d+/)[0]) / 1024 / 1024)
+  } catch (err) {
+    throw err
+  }
+}
+
 const getMachineInfo = (): Promise<MachineInfo> => {
   return Promise.allSettled([
     si.cpu(),
@@ -84,6 +103,33 @@ const getMachineInfo = (): Promise<MachineInfo> => {
         cpuData = cpu.value
       }
     }
+
+    // Try getting VRAM information from glxinfo and clinfo if they are available. If the VRAM detected by either of
+    // those is more than what is detected by systeminformation, replace the vram amount.
+    // NOTE: Only tested on 1 GPU, hence the limitation of checking and replacing only if 1 GPU was found.
+    if (graphics.status === 'fulfilled') {
+      if (graphics.value.controllers.length === 1) {
+        try {
+          let glxVram = glxCheckVRAM()
+          if (glxVram > graphics.value.controllers[0].vram) {
+            graphics.value.controllers[0].vram = glxVram
+          }
+        } catch (err) {
+          console.error(err)
+        }
+        try {
+          let clinfoVram = clinfoCheckVRAM()
+          if (clinfoVram > graphics.value.controllers[0].vram) {
+            graphics.value.controllers[0].vram = clinfoVram
+          }
+        } catch (err) {
+          console.error(err)
+        }
+        console.log(graphics.value)
+      }
+    }
+
+    console.log(graphics.value)
 
     return {
       version: version.status === 'fulfilled' ? version.value : undefined,
