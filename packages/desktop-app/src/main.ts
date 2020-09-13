@@ -194,21 +194,22 @@ const createMainWindow = () => {
   })
 
   mainWindow.once('ready-to-show', () => {
-    tray = new Tray(path.join(__static, 'logo.ico'))
-    tray.setContextMenu(createSystemTrayMenu(true))
-    tray.setToolTip('Salad')
-    tray.on('double-click', () => {
-      if (mainWindow) {
-        if (mainWindow.isVisible()) {
-          tray.setContextMenu(createSystemTrayMenu(false))
-          mainWindow.hide()
-        } else {
-          tray.setContextMenu(createSystemTrayMenu(true))
-          mainWindow.show()
-        }
-      }
-    })
-
+    //path.join(__static, 'logo.ico')
+    //tray = new Tray(path.join(__static, 'logo.ico'))
+    //console.error('TRAY CREATED')
+    //tray.setContextMenu(createSystemTrayMenu(true))
+    //tray.setToolTip('Salad')
+    //tray.on('double-click', () => {
+    //  if (mainWindow) {
+    //    if (mainWindow.isVisible()) {
+    //      tray.setContextMenu(createSystemTrayMenu(false))
+    //      mainWindow.hide()
+    //    } else {
+    //      tray.setContextMenu(createSystemTrayMenu(true))
+    //     mainWindow.show()
+    //   }
+    //  }
+    //})
     mainWindow.show()
     if (offlineWindow) {
       offlineWindow.destroy()
