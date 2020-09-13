@@ -1,4 +1,3 @@
-import os from 'os'
 import { Systeminformation } from 'systeminformation'
 import { RootStore } from '../../Store'
 import { Machine } from '../machine/models'
@@ -47,7 +46,7 @@ export const getPluginDefinitions = (store: RootStore): PluginDefinition[] => {
 
   let machine = store.machine.currentMachine
   let machineInfo = store.native.machineInfo
-  let platform = os.platform()
+  let platform = machineInfo?.os?.platform!
 
   if (machine === undefined || machineInfo?.graphics === undefined) {
     return []
