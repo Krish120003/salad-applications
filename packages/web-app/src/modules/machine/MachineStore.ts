@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios'
 import { autorun, computed, flow, observable } from 'mobx'
+import os from 'os'
 import { RootStore } from '../../Store'
 import { getPluginDefinitions, getPluginDefinitionsForGraphics } from '../salad-bowl/PluginDefinitionFactory'
 import { GpuInformation } from './models'
@@ -98,7 +99,8 @@ export class MachineStore {
 
       if (this.currentMachine) {
         //Get all the miner plugins for each graphics card
-        const plugins = getPluginDefinitionsForGraphics(this.currentMachine, [x])
+        let platform = os.platform()
+        const plugins = getPluginDefinitionsForGraphics(this.currentMachine, [x], platform)
 
         compatible = plugins.length > 0
       }
