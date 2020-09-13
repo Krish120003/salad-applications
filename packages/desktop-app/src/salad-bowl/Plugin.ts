@@ -1,14 +1,14 @@
 import axios from 'axios'
+import { ChildProcess, execSync, spawn } from 'child_process'
 //@ts-ignore
 import DecompressZip from 'decompress-zip'
-import { spawn, ChildProcess, execSync } from 'child_process'
-import { PluginDefinition } from './models/PluginDefinition'
-import { FileDefinition } from './models/FileDefinition'
-import { PluginStatus } from './models/PluginStatus'
-import { ErrorAction } from './models/ErrorAction'
-import * as path from 'path'
 import * as fs from 'fs'
+import * as path from 'path'
 import { INotificationService } from './INotificationService'
+import { ErrorAction } from './models/ErrorAction'
+import { FileDefinition } from './models/FileDefinition'
+import { PluginDefinition } from './models/PluginDefinition'
+import { PluginStatus } from './models/PluginStatus'
 
 export class Plugin {
   private _status: PluginStatus = PluginStatus.Unknown
@@ -100,7 +100,12 @@ export class Plugin {
       let processName = path.basename(this.pluginDefinition.exe)
       try {
         execSync(`taskkill /im ${processName} /t /f`)
-      } catch {}
+      } catch {
+        // If taskkill fails, run a pkill to stop the process on Linux
+        try {
+          execSync(`pkill ${processName}`)
+        } catch {}
+      }
       // this.process.kill()
     } else {
       console.log('No process to kill.')
