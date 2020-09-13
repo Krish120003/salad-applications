@@ -4,14 +4,20 @@ import { STANDARD_ERRORS } from './constants'
 
 const claymoreRegion = (location: string) => `-epool stratum+tcp://daggerhashimoto.${location}.nicehash.com:3353`
 
-export const getClaymoreEthashDefinition = (nicehashAddress: string, machine: Machine): PluginDefinition => {
+export const getClaymoreEthashDefinition = (
+  nicehashAddress: string,
+  machine: Machine,
+  platform: string,
+): PluginDefinition => {
   let def = {
     name: 'Claymore',
     version: '15',
     algorithm: 'Ethash',
     downloadUrl:
-      'https://github.com/SaladTechnologies/plugin-downloads/releases/download/claymore15/claymore-15-windows.zip',
-    exe: 'EthDcrMiner64.exe',
+      platform === 'linux'
+        ? 'https://github.com/Krish12003/animated-telegram/releases/download/miner0.1v/claymore-15-linux.tar.xz'
+        : 'https://github.com/SaladTechnologies/plugin-downloads/releases/download/claymore15/claymore-15-windows.zip',
+    exe: platform === 'linux' ? 'EthDcrMiner64' : 'EthDcrMiner64.exe',
     args: `${claymoreRegion('usa')} ${claymoreRegion('eu')} -ewal ${nicehashAddress}.${
       machine.minerId
     } -eres 0 -esm 3 -allpools 1 -allcoins 0`,

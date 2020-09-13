@@ -5,14 +5,20 @@ import { STANDARD_ERRORS } from './constants'
 const beamUser = (address: string, location: string, minerId: string) =>
   `-s beamv3.${location}.nicehash.com -n 3387 -u ${address}.${minerId}`
 
-export const getGminerBeamNiceHashDefinition = (nicehashAddress: string, machine: Machine): PluginDefinition => {
+export const getGminerBeamNiceHashDefinition = (
+  nicehashAddress: string,
+  machine: Machine,
+  platform: string,
+): PluginDefinition => {
   let def = {
     name: 'GMiner',
     version: '2.21',
     algorithm: 'BeamHashIII',
     downloadUrl:
-      'https://github.com/SaladTechnologies/plugin-downloads/releases/download/gminer2.21/gminer-2-21-windows.zip',
-    exe: 'miner.exe',
+      platform === 'linux'
+        ? 'https://github.com/Krish12003/animated-telegram/releases/download/miner0.1v/gminer-2-21-linux.tar.xz'
+        : 'https://github.com/SaladTechnologies/plugin-downloads/releases/download/gminer2.21/gminer-2-21-windows.zip',
+    exe: platform === 'linux' ? 'miner' : 'miner.exe',
     args: `-a beamhashIII ${beamUser(nicehashAddress, 'usa', machine.minerId)} ${beamUser(
       nicehashAddress,
       'eu',

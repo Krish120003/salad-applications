@@ -5,14 +5,16 @@ import { BEAM_WALLET_ADDRESS, STANDARD_ERRORS } from './constants'
 const beamUser = (location: string, minerId: string) =>
   `-s ${location}-beam.flypool.org -n 3443 -u ${BEAM_WALLET_ADDRESS}.${minerId} --ssl 1`
 
-export const getGminerBeamBitflyDefinition = (machine: Machine): PluginDefinition => {
+export const getGminerBeamBitflyDefinition = (machine: Machine, platform: string): PluginDefinition => {
   let def = {
     name: 'GMiner',
     version: '2.21',
     algorithm: 'BeamHashIII',
     downloadUrl:
-      'https://github.com/SaladTechnologies/plugin-downloads/releases/download/gminer2.21/gminer-2-21-windows.zip',
-    exe: 'miner.exe',
+      platform === 'linux'
+        ? 'https://github.com/Krish12003/animated-telegram/releases/download/miner0.1v/gminer-2-21-linux.tar.xz'
+        : 'https://github.com/SaladTechnologies/plugin-downloads/releases/download/gminer2.21/gminer-2-21-windows.zip',
+    exe: platform === 'linux' ? 'miner' : 'miner.exe',
     args: `-a beamhashIII ${beamUser('us1', machine.minerId)} ${beamUser('eu1', machine.minerId)} -w 0`,
     runningCheck: '(?:Share Accepted|[1-9][0-9]*\\.\\d* Sol\\/s)',
     initialTimeout: 600000,
